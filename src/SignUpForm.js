@@ -9,10 +9,6 @@ export default function SignUpForm() {
     setClick(true);
   }
 
-  function changeValue(event) {
-    setValue(event.target.value);
-  }
-
   return (
     <div className="form">
       {click === false ? (
@@ -25,7 +21,9 @@ export default function SignUpForm() {
               id="student-role"
               value="student"
               checked={value == "student" ? true : false}
-              onChange={changeValue}
+              onChange={(event) => {
+                setValue(event.target.value);
+              }}
             />
             <label for="student-role">Студент</label>
             <input
@@ -34,7 +32,9 @@ export default function SignUpForm() {
               id="tutor-role"
               value="tutor"
               checked={value == "tutor" ? true : false}
-              onChange={changeValue}
+              onChange={(event) => {
+                setValue(event.target.value);
+              }}
             />
             <label for="tutor-role">Репетитор</label>
             <div id="role-layer"></div>
