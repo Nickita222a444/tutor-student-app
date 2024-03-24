@@ -20,7 +20,7 @@ export default function SignUpForm() {
               name="role"
               id="student-role"
               value="student"
-              checked={value == "student" ? true : false}
+              checked={value === "student" ? true : false}
               onChange={(event) => {
                 setValue(event.target.value);
               }}
@@ -31,7 +31,7 @@ export default function SignUpForm() {
               name="role"
               id="tutor-role"
               value="tutor"
-              checked={value == "tutor" ? true : false}
+              checked={value === "tutor" ? true : false}
               onChange={(event) => {
                 setValue(event.target.value);
               }}
@@ -52,8 +52,15 @@ export default function SignUpForm() {
             Пароль
           </label>
           <input type="password" id="password" className="form-input"></input>
-          <button type="submit" className="sign-button" onClick={clicked}>
+          <button type="submit" className="sign-button">
             Регистрация
+          </button>
+
+          <div className="dotted-line"></div>
+          <p id="sign-in-offer">Нет аккаунта?</p>
+
+          <button className="sign-button" onClick={clicked}>
+            Войти
           </button>
         </form>
       ) : (
