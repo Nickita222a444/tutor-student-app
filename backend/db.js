@@ -260,6 +260,51 @@ class Database {
       await mongoClient.close();
     }
   }
+
+  async searchTutor(specialization, minAge, maxAge) {
+    try {
+      await mongoClient.connect();
+      const db = mongoClient.db("tutor_db");
+      const resume = db.collection("resume");
+
+      return await resume
+        .aggregate([
+          {
+            $project: {
+              _id: 0,
+              resume_id: 1,
+              nickname: 1,
+              full_name: 1,
+              birth_date: 1,
+              education: 1,
+              about: 1,
+              phone_number: 1,
+              work_email: 1,
+              qualification: 1,
+              age: {
+                $toInt: {
+                  $divide: [
+                    { $subtract: [new Date(), "$birth_date"] },
+                    1000 * 60 * 60 * 24 * 365,
+                  ],
+                },
+              },
+            },
+          },
+          {
+            $match: {
+              qualification: { $all: specialization },
+              age: { $gte: minAge, $lte: maxAge },
+            },
+          },
+        ])
+        .toArray();
+    } catch (err) {
+      console.log(err);
+    } finally {
+      await mongoClient.close();
+    }
+  }
 }
 
 const db = new Database();
