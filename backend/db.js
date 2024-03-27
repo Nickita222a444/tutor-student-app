@@ -112,8 +112,6 @@ class Database {
         curResumeId = 1;
       } else curResumeId = maxResumeDoc[0]["resume_id"] + 1;
 
-      console.log(curResumeId);
-
       await resume.insertOne({
         resume_id: curResumeId,
         nickname,
@@ -174,7 +172,88 @@ class Database {
       const db = mongoClient.db("tutor_db");
       const resume = db.collection("resume");
 
-      return resume.findOne({ nickname });
+      return await resume.findOne({ nickname });
+    } catch (err) {
+      console.log(err);
+    } finally {
+      await mongoClient.close();
+    }
+  }
+
+  async addFeedback(nickname, resume_id, date, text) {
+    try {
+      await mongoClient.connect();
+      const db = mongoClient.db("tutor_db");
+      const feedback = db.collection("feedback");
+
+      await feedback.insertOne({
+        author_name: nickname,
+        resume_id,
+        date,
+        text,
+      });
+    } catch (err) {
+      console.log(err);
+    } finally {
+      await mongoClient.close();
+    }
+  }
+
+  async updateFeedback(nickname, resume_id, date, text) {
+    try {
+      await mongoClient.connect();
+      const db = mongoClient.db("tutor_db");
+      const feedback = db.collection("feedback");
+
+      await feedback.findOneAndUpdate({ nickname, resume_id }, { text });
+    } catch (err) {
+      console.log(err);
+    } finally {
+      await mongoClient.close();
+    }
+  }
+
+  async addToFavorite(nickname, resume_id) {
+    try {
+      await mongoClient.connect();
+      const db = mongoClient.db("tutor_db");
+      const user = db.collection("users");
+
+      await user.findOneAndUpdate(
+        { nickname },
+        { $push: { favorite: resume_id } }
+      );
+    } catch (err) {
+      console.log(err);
+    } finally {
+      await mongoClient.close();
+    }
+  }
+
+  async deleteFavorite(nickname, resume_id) {
+    try {
+      await mongoClient.connect();
+      const db = mongoClient.db("tutor_db");
+      const user = db.collection("users");
+
+      await user.findOneAndUpdate(
+        { nickname },
+        { $pull: { favorite: resume_id } }
+      );
+    } catch (err) {
+      console.log(err);
+    } finally {
+      await mongoClient.close();
+    }
+  }
+
+  async showSubjects() {
+    try {
+      await mongoClient.connect();
+      const db = mongoClient.db("tutor_db");
+      const subject = db.collection("subject");
+
+      return await subject.find().toArray();
     } catch (err) {
       console.log(err);
     } finally {
