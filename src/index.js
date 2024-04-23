@@ -2,10 +2,11 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import "./css/index.css";
 import SignInForm from "./SignInForm";
+import TutorCabinet from "./TutorCabinet";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
-    <SignInForm />
+    <TutorCabinet />
   </React.StrictMode>
 );

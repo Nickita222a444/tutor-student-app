@@ -1,4 +1,5 @@
 const MongoClient = require("mongodb").MongoClient;
+const bcrypt = require("bcrypt");
 
 const mongoClient = new MongoClient("mongodb://admin:admin@127.0.0.1:27017");
 
@@ -20,7 +21,7 @@ class Database {
       const temp = {
         nickname,
         email,
-        password,
+        password: await bcrypt.hash(password, 10),
         role,
       };
 
@@ -34,18 +35,33 @@ class Database {
     }
   }
 
+  async userExists(nickname) {
+    try {
+      await mongoClient.connect();
+      const db = mongoClient.db("tutor_db");
+      const user = db.collection("users");
+
+      const extractData = await user.findOne({ nickname });
+
+      if (extractData === null) {
+        return false;
+      }
+      return true;
+    } catch (err) {
+      console.log(err);
+    } finally {
+      await mongoClient.close();
+    }
+  }
+
   async checkUser(nickname, password) {
     try {
       await mongoClient.connect();
       const db = mongoClient.db("tutor_db");
       const user = db.collection("users");
 
-      const extractData = await user.findOne({ nickname, password });
-
-      if (extractData === null) {
-        return false;
-      }
-      return true;
+      const extractedData = await user.findOne({ nickname });
+      return await bcrypt.compare(password, extractedData["password"]);
     } catch (err) {
       console.log(err);
     } finally {
@@ -184,14 +200,20 @@ class Database {
     try {
       await mongoClient.connect();
       const db = mongoClient.db("tutor_db");
-      const feedback = db.collection("feedback");
+      const resume = db.collection("resume");
 
-      await feedback.insertOne({
-        author_name: nickname,
-        resume_id,
-        date,
-        text,
-      });
+      await resume.findOneAndUpdate(
+        { resume_id },
+        {
+          $push: {
+            feedback: {
+              author_name: nickname,
+              date,
+              text,
+            },
+          },
+        }
+      );
     } catch (err) {
       console.log(err);
     } finally {
@@ -199,13 +221,38 @@ class Database {
     }
   }
 
-  async updateFeedback(nickname, resume_id, date, text) {
+  async updateFeedback(nickname, resume_id, text) {
     try {
       await mongoClient.connect();
       const db = mongoClient.db("tutor_db");
-      const feedback = db.collection("feedback");
+      const resume = db.collection("resume");
 
-      await feedback.findOneAndUpdate({ nickname, resume_id }, { text });
+      await resume.findOneAndUpdate(
+        { resume_id },
+        { $set: { "feedback.$[elem].text": text } },
+        { arrayFilters: [{ "elem.author_name": nickname }] }
+      );
+    } catch (err) {
+      console.log(err);
+    } finally {
+      await mongoClient.close();
+    }
+  }
+
+  async isFeedbackExists(nickname, resume_id) {
+    try {
+      await mongoClient.connect();
+      const db = mongoClient.db("tutor_db");
+      const resume = db.collection("resume");
+
+      if (
+        (await resume.findOne({
+          resume_id,
+          feedback: { $elemMatch: { author_name: nickname } },
+        })) === null
+      )
+        return false;
+      return true;
     } catch (err) {
       console.log(err);
     } finally {
@@ -305,7 +352,73 @@ class Database {
       await mongoClient.close();
     }
   }
+
+  // все студенты, оставившие отзыв на данного преподавателя
+  async studentsFeedbackedTutor(resume_id) {
+    try {
+      await mongoClient.connect();
+      const db = mongoClient.db("tutor_db");
+      const resume = db.collection("resume");
+
+      const f = await resume.findOne({ resume_id });
+
+      return f["feedback"].reduce((students, item) => {
+        students.push(item["author_name"]);
+        return students;
+      }, []);
+    } catch (err) {
+      console.log(err);
+    } finally {
+      await mongoClient.close();
+    }
+  }
+
+  // все преподаватели, на которых оставил отзыв студент
+  async tutorsFeedbackedByStudent(student) {
+    try {
+      await mongoClient.connect();
+      const db = mongoClient.db("tutor_db");
+      const resume = db.collection("resume");
+
+      const f = await resume
+        .find({
+          feedback: { $elemMatch: { author_name: student } },
+        })
+        .toArray();
+
+      return f.reduce((tutors, item) => {
+        tutors.push(item["full_name"]);
+        return tutors;
+      }, []);
+    } catch (err) {
+      console.log(err);
+    } finally {
+      await mongoClient.close();
+    }
+  }
+
+  // все студенты, которые добавили этого преподавателя в избранное
+  async studentsFavoritedTutor(resume_id) {
+    try {
+      await mongoClient.connect();
+      const db = mongoClient.db("tutor_db");
+      const user = db.collection("users");
+
+      const f = await user.find({ role: "student" }).toArray();
+
+      return f.reduce((students, item) => {
+        if (item["favorite"].includes(resume_id))
+          students.push(item["nickname"]);
+        return students;
+      }, []);
+    } catch (err) {
+      console.log(err);
+    } finally {
+      await mongoClient.close();
+    }
+  }
 }
 
 const db = new Database();
 Object.freeze(db);
+db.tutorsFeedbackedByStudent("Ludvick").then((el) => console.log(el));
