@@ -11,8 +11,10 @@
 }
 
 #tutor-form {
+  display: inline-block;
   position: relative;
   padding: 40px;
+  width: 40vw;
 }
 
 .form-label {
@@ -85,4 +87,14 @@ img {
 
 .specialization-list .react-select__menu {
   width: 40vw;
+}
+
+#comment-box {
+  display: inline-block;
+  vertical-align: top;
+  padding: 40px 0 0 50px;
+}
+
+#comment-box .comment-head:not(:first-child) {
+  margin-top: 10px;
 }

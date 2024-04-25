@@ -3,6 +3,7 @@ import door from "./img/door_icon.svg";
 import user_icon from "./img/user_icon.svg";
 import { useState } from "react";
 import Select from "react-select";
+import Comment from "./Comment";
 
 export default function TutorCabinet() {
   const [isClearable, setIsClearable] = useState(true);
@@ -66,6 +67,19 @@ export default function TutorCabinet() {
           Сохранить
         </button>
       </form>
+      <div id="comment-box">
+        <p>Комментарии (2):</p>
+        <Comment
+          nickname="Ludvick"
+          date="24.04.24"
+          text="Здорово, всё супер!"
+        />
+        <Comment
+          nickname="Richard"
+          date="23.04.24"
+          text="Отвратительно. Весь урок обсуждали жёсткую воду"
+        />
+      </div>
     </div>
   );
 }
