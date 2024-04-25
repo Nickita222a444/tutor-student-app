@@ -5,6 +5,21 @@ import { useState } from "react";
 import Select from "react-select";
 import Comment from "./Comment";
 
+function getQuantity(n) {
+  const old_n = n;
+  n %= 100;
+  if (n >= 5 && n <= 20) {
+    return `${old_n} студентов`;
+  }
+  n %= 10;
+  if (n === 1) {
+    return `${old_n} студент`;
+  }
+  if (n >= 2 && n <= 4) {
+    return `${old_n} студента`;
+  }
+}
+
 export default function TutorCabinet() {
   const [isClearable, setIsClearable] = useState(true);
   return (
@@ -67,7 +82,12 @@ export default function TutorCabinet() {
           Сохранить
         </button>
       </form>
-      <div id="comment-box">
+      <div id="right-col">
+        <p>
+          Вас добавили в избранное:
+          <br />
+          {getQuantity(2)}
+        </p>
         <p>Комментарии (2):</p>
         <Comment
           nickname="Ludvick"

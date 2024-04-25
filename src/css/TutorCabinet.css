@@ -89,12 +89,16 @@ img {
   width: 40vw;
 }
 
-#comment-box {
+#right-col {
   display: inline-block;
   vertical-align: top;
   padding: 40px 0 0 50px;
 }
 
-#comment-box .comment-head:not(:first-child) {
+#right-col .comment-head:not(:first-child) {
   margin-top: 10px;
+}
+
+#right-col > p:first-child {
+  margin-bottom: 20px;
 }
