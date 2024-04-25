@@ -78,7 +78,7 @@ export default function TutorCabinet() {
           placeholder="Телефон"
         ></input>
 
-        <button type="submit" className="button">
+        <button type="submit" className="button save-button">
           Сохранить
         </button>
       </form>

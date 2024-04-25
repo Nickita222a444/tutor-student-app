@@ -46,19 +46,22 @@
   cursor: pointer;
   font-size: 15px;
   padding: 0.6em;
+}
 
+.save-button {
   display: block;
-  position: absolute;
-  /* left: 25vw; */
-  /* transform: translate(-50%, 0); */
+  margin-left: auto;
+  margin-right: auto;
 }
 
 #exit-button {
   background-color: rgb(70, 113, 240);
-  display: flex;
-  align-items: center;
-  cursor: pointer;
-  z-index: 1;
+  padding: 0.4em;
+  box-sizing: border-box;
+}
+
+#exit-button * {
+  vertical-align: middle;
 }
 
 img {
@@ -68,21 +71,24 @@ img {
 
 #user-icon {
   width: 30px;
+  vertical-align: middle;
 }
 
 #username {
   color: #137ee8;
-  font-weight: bold;
   font-size: 18px;
+  margin-top: 6px;
+  vertical-align: top;
 }
 
 #user-panel {
   float: right;
+  margin-top: 3px;
+  margin-right: 3px;
 }
 
 #user-panel * {
-  position: relative;
-  display: inline;
+  display: inline-block;
 }
 
 .specialization-list .react-select__menu {
