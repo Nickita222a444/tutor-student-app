@@ -20,16 +20,20 @@
   font-size: 15px;
 }
 
-.form-input {
+.form-input,
+.specialization-list .react-select__control {
   background-color: #efefef;
   border: none;
-  display: block;
   max-width: 40vw;
   height: 35px;
   border-radius: 8px;
   margin-bottom: 0.8em;
   box-sizing: border-box;
   padding: 0 9px;
+}
+
+.form-input {
+  display: block;
 }
 
 .button {
@@ -77,4 +81,8 @@ img {
 #user-panel * {
   position: relative;
   display: inline;
+}
+
+.specialization-list .react-select__menu {
+  width: 40vw;
 }

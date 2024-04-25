@@ -1,8 +1,11 @@
 import "./css/TutorCabinet.css";
 import door from "./img/door_icon.svg";
 import user_icon from "./img/user_icon.svg";
+import { useState } from "react";
+import Select from "react-select";
 
 export default function TutorCabinet() {
+  const [isClearable, setIsClearable] = useState(true);
   return (
     <div className="tutor-screen">
       <div id="user-panel">
@@ -26,6 +29,21 @@ export default function TutorCabinet() {
           Образование
         </label>
         <input type="text" id="education" className="form-input"></input>
+
+        <label htmlFor="specialization-list" className="form-label">
+          Специализация
+        </label>
+        <Select
+          isMulti
+          placeholder=""
+          className="specialization-list"
+          classNamePrefix="react-select"
+          options={[
+            { label: "Алхимия" },
+            { label: "Хиромантия" },
+            { label: "Армянский язык" },
+          ]}
+        />
         <label htmlFor="about" className="form-label">
           О себе
         </label>
