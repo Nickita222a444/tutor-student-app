@@ -1,0 +1,70 @@
+.student-screen {
+  background-color: white;
+  border-radius: 16px;
+  position: absolute;
+  width: 94vw;
+  height: 94vh;
+  top: 50%;
+  left: 50%;
+  margin-top: -47vh;
+  margin-left: -47vw;
+}
+
+.student-screen > p:first-child {
+  font-size: 20px;
+  margin: 10px 0 0 10px;
+}
+
+#search {
+  display: inline-block;
+  padding-left: 40px;
+}
+
+.specialization-list .react-select__control {
+  background-color: #efefef;
+  border-radius: 8px;
+  /* height: 10px; */
+  width: 25vw;
+}
+
+.specialization-list .react-select__control {
+  /* transform: scaleY(0.8); */
+}
+
+.specialization-list .react-select__menu {
+  width: 25vw;
+}
+
+#age-select {
+  display: inline-block;
+  margin-left: 50px;
+}
+
+#age-select * {
+  display: inline;
+}
+
+#age-select p:first-child {
+  display: block;
+}
+
+#age-select input {
+  height: 30px;
+  width: 40px;
+  margin-left: 8px;
+}
+
+#age-select :nth-child(4) {
+  margin-left: 5px;
+}
+
+.button {
+  background: #ff4b2b; /* цвет кнопки */
+  border: none;
+  border-radius: 22px; /* скругление кнопки */
+  color: whitesmoke; /* цвет текста кнопки */
+  cursor: pointer;
+  font-size: 15px;
+  padding: 0.6em;
+  margin-left: 20px;
+}
