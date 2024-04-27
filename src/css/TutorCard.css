@@ -16,6 +16,6 @@
   text-decoration: none;
 }
 
-#tutor-card:not(:first-child) {
+.tutor-card:not(:first-child) {
   margin-top: 10px;
 }

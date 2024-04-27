@@ -10,9 +10,10 @@
   margin-left: -47vw;
 }
 
-.student-screen > p:first-child {
+#search-p {
   font-size: 20px;
   margin: 10px 0 0 10px;
+  display: inline;
 }
 
 #search {
@@ -23,12 +24,7 @@
 .specialization-list .react-select__control {
   background-color: #efefef;
   border-radius: 8px;
-  /* height: 10px; */
   width: 25vw;
-}
-
-.specialization-list .react-select__control {
-  /* transform: scaleY(0.8); */
 }
 
 .specialization-list .react-select__menu {
@@ -58,18 +54,71 @@
   margin-left: 5px;
 }
 
-.button {
-  background: #ff4b2b; /* цвет кнопки */
+/* .button {
+  background: #ff4b2b; 
   border: none;
-  border-radius: 22px; /* скругление кнопки */
-  color: whitesmoke; /* цвет текста кнопки */
+  border-radius: 22px; 
+  color: whitesmoke;
   cursor: pointer;
   font-size: 15px;
   padding: 0.6em;
   margin-left: 20px;
-}
+} */
 
 #search-result {
   padding-left: 40px;
   padding-top: 15px;
+  max-height: 75vh;
+  overflow-x: auto;
+}
+
+.button {
+  background: #ff4b2b;
+  border: none;
+  border-radius: 22px;
+  color: whitesmoke;
+  cursor: pointer;
+  font-size: 15px;
+  padding: 0.6em;
+}
+
+.save-button {
+  margin-left: 20px;
+}
+
+#exit-button {
+  background-color: rgb(70, 113, 240);
+  padding: 0.4em;
+  box-sizing: border-box;
+}
+
+#exit-button * {
+  vertical-align: middle;
+}
+
+img {
+  margin-left: 5px;
+  width: 20px;
+}
+
+#user-panel #user-icon {
+  width: 30px;
+  vertical-align: middle;
+}
+
+#username {
+  color: #137ee8;
+  font-size: 18px;
+  margin-top: 6px;
+  vertical-align: top;
+}
+
+#user-panel {
+  float: right;
+  margin-top: 3px;
+  margin-right: 3px;
+}
+
+#user-panel * {
+  display: inline-block;
 }

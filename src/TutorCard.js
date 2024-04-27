@@ -3,7 +3,7 @@ import user_icon from "./img/user_icon.svg";
 
 export default function TutorCard({ name, birth_date, specialization, about }) {
   return (
-    <div id="tutor-card">
+    <div class="tutor-card">
       <img src={user_icon} id="user-icon" />
       <div id="tutor-info">
         <a href="">{name}</a>

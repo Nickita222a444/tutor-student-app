@@ -1,11 +1,24 @@
 import TutorCard from "./TutorCard";
 import "./css/StudentCabinet.css";
 import Select from "react-select";
+import user_icon from "./img/user_icon.svg";
+import door_icon from "./img/door_icon.svg";
 
 export default function StudentCabinet() {
   return (
     <div className="student-screen">
-      <p>Поиск</p>
+      <div>
+        <p id="search-p">Поиск</p>
+        <div id="user-panel">
+          <p id="username">Jacob</p>
+          <img src={user_icon} id="user-icon" />
+          <button className="button" id="exit-button">
+            Выйти
+            <img src={door_icon} />
+          </button>
+        </div>
+      </div>
+
       <div id="search">
         <p>Специализация</p>
         <Select
@@ -14,9 +27,9 @@ export default function StudentCabinet() {
           classNamePrefix="react-select"
           placeholder=""
           options={[
-            { label: "Алхимия" },
-            { label: "Хиромантия" },
-            { label: "Армянский язык" },
+            { label: "Алхимия", value: "alchemy" },
+            { label: "Хиромантия", value: "palmistry" },
+            { label: "Армянский язык", value: "armenian-language" },
           ]}
         ></Select>
       </div>
@@ -38,6 +51,48 @@ export default function StudentCabinet() {
           birth_date="01.01.1330"
           specialization={["алхимия", "торговля"]}
           about="создатель философского камня, плейбой, меценат. Веду курсы по алхимии и предпринимательству. Опыт преподавания 200 лет"
+        />
+        <TutorCard
+          name="Волан-де-Морт"
+          birth_date="31.12.1926"
+          specialization={["некромантия", "чёрная магия"]}
+          about="самый авторитетный чёрный волшебник всех времён и народов. Учу воскрешать единорогов."
+        />
+        <TutorCard
+          name="Волан-де-Морт"
+          birth_date="31.12.1926"
+          specialization={["некромантия", "чёрная магия"]}
+          about="самый авторитетный чёрный волшебник всех времён и народов. Учу воскрешать единорогов."
+        />
+        <TutorCard
+          name="Волан-де-Морт"
+          birth_date="31.12.1926"
+          specialization={["некромантия", "чёрная магия"]}
+          about="самый авторитетный чёрный волшебник всех времён и народов. Учу воскрешать единорогов."
+        />
+        <TutorCard
+          name="Волан-де-Морт"
+          birth_date="31.12.1926"
+          specialization={["некромантия", "чёрная магия"]}
+          about="самый авторитетный чёрный волшебник всех времён и народов. Учу воскрешать единорогов."
+        />
+        <TutorCard
+          name="Волан-де-Морт"
+          birth_date="31.12.1926"
+          specialization={["некромантия", "чёрная магия"]}
+          about="самый авторитетный чёрный волшебник всех времён и народов. Учу воскрешать единорогов."
+        />
+        <TutorCard
+          name="Волан-де-Морт"
+          birth_date="31.12.1926"
+          specialization={["некромантия", "чёрная магия"]}
+          about="самый авторитетный чёрный волшебник всех времён и народов. Учу воскрешать единорогов."
+        />
+        <TutorCard
+          name="Волан-де-Морт"
+          birth_date="31.12.1926"
+          specialization={["некромантия", "чёрная магия"]}
+          about="самый авторитетный чёрный волшебник всех времён и народов. Учу воскрешать единорогов."
         />
         <TutorCard
           name="Волан-де-Морт"
