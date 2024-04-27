@@ -68,3 +68,8 @@
   padding: 0.6em;
   margin-left: 20px;
 }
+
+#search-result {
+  padding-left: 40px;
+  padding-top: 15px;
+}

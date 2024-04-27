@@ -1,3 +1,4 @@
+import TutorCard from "./TutorCard";
 import "./css/StudentCabinet.css";
 import Select from "react-select";
 
@@ -29,8 +30,22 @@ export default function StudentCabinet() {
       </div>
 
       <button type="submit" className="button save-button">
-        Сохранить
+        Найти
       </button>
+      <div id="search-result">
+        <TutorCard
+          name="Николас Фламель"
+          birth_date="01.01.1330"
+          specialization={["алхимия", "торговля"]}
+          about="создатель философского камня, плейбой, меценат. Веду курсы по алхимии и предпринимательству. Опыт преподавания 200 лет"
+        />
+        <TutorCard
+          name="Волан-де-Морт"
+          birth_date="31.12.1926"
+          specialization={["некромантия", "чёрная магия"]}
+          about="самый авторитетный чёрный волшебник всех времён и народов. Учу воскрешать единорогов."
+        />
+      </div>
     </div>
   );
 }
