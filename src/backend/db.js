@@ -421,4 +421,6 @@ class Database {
 
 const db = new Database();
 Object.freeze(db);
-db.tutorsFeedbackedByStudent("Ludvick").then((el) => console.log(el));
+//db.tutorsFeedbackedByStudent("Ludvick").then((el) => console.log(el));
+// db.showSubjects().then((el) => console.log(el));
+module.exports = db;

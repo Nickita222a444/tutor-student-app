@@ -10,9 +10,10 @@
   margin-left: -47vw;
 }
 
-#search-p {
-  font-size: 20px;
-  margin: 10px 0 0 10px;
+#search-mode {
+  font-size: 18px;
+  /* margin: 10px 0 0 10px; */
+  /* margin-bottom: 1px; */
   display: inline;
 }
 
@@ -82,7 +83,7 @@
   padding: 0.6em;
 }
 
-.save-button {
+.search-button {
   margin-left: 20px;
 }
 
@@ -121,4 +122,57 @@ img {
 
 #user-panel * {
   display: inline-block;
+}
+
+#search-mode > input[type="radio"] {
+  display: none;
+}
+
+#search-mode label {
+  display: flex;
+  position: absolute;
+  cursor: pointer;
+  border: 1px solid #999;
+  border-radius: 6px;
+  border: none;
+  align-items: center;
+  height: 35px;
+  width: 12px;
+  z-index: 2;
+  left: 40px;
+}
+
+#search-mode > label:nth-child(4) {
+  position: absolute;
+  left: 130px;
+}
+
+#search-role-layer {
+  display: flex;
+  position: absolute;
+  border: 1px solid #999;
+  background: #ffe0a6;
+  border-radius: 6px;
+  border: none;
+  height: 35px;
+  width: 100px;
+  transition: 0.5s ease all;
+  z-index: 1;
+  left: 17px;
+}
+
+#search-mode #fav-mode:checked ~ #search-role-layer {
+  transform: translateX(100px);
+  width: 117px;
+}
+
+#search-mode #all-mode:checked ~ #search-role-layer {
+  transform: translateX(-calc(100% - 2 * var(--sign-form-padding)));
+  width: 100px;
+}
+
+#search,
+#age-select,
+#specialization-list #search-button {
+  margin-top: 40px;
 }

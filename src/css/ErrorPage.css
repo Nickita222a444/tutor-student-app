@@ -1,0 +1,27 @@
+.error-screen {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.error-container {
+  position: absolute;
+  background-color: white;
+  border-radius: 16px;
+  padding: 40px;
+}
+
+.error-img {
+  /* position: relative; */
+  /* z-index: 66; */
+  width: 250px;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.error-message {
+  font-size: 22px;
+  font-weight: 480;
+}

@@ -10,7 +10,8 @@
   margin-left: -47vw;
 }
 
-#tutor-form {
+#tutor-form,
+#tutor-resume {
   display: inline-block;
   position: relative;
   padding: 40px;
@@ -23,15 +24,34 @@
 }
 
 .form-input,
+.resume-input,
+.review-input,
 .specialization-list .react-select__control {
   background-color: #efefef;
   border: none;
-  max-width: 40vw;
+  width: 40vw;
   height: 35px;
   border-radius: 8px;
   margin-bottom: 0.8em;
   box-sizing: border-box;
   padding: 0 9px;
+}
+
+.resume-input {
+  padding-top: 10px;
+  padding-bottom: 10px;
+  height: auto;
+  min-height: 39.2px;
+  word-wrap: break-word;
+}
+
+.review-input {
+  display: block;
+  width: 34vw;
+  height: 100px;
+  resize: none;
+  font-size: 16px;
+  padding-top: 5px;
 }
 
 .form-input {
@@ -48,10 +68,20 @@
   padding: 0.6em;
 }
 
-.save-button {
-  display: block;
-  margin-left: auto;
-  margin-right: auto;
+.favorite-button {
+  margin-bottom: 10px;
+  background-color: #ffb6c1;
+  color: #000;
+  font-size: 16px;
+}
+
+.favorite-button * {
+  display: inline;
+  vertical-align: middle;
+}
+
+.favorite-button p {
+  margin-left: 5px;
 }
 
 #exit-button {
@@ -106,5 +136,17 @@ img {
 }
 
 #right-col > p:first-child {
-  margin-bottom: 20px;
+  margin-bottom: 10px;
+}
+
+#review-greeting {
+  margin-top: 9px;
+}
+
+#right-col textarea {
+  margin-top: 8px;
+}
+
+#right-col button:last-child {
+  float: right;
 }
