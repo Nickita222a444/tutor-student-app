@@ -1,18 +1,48 @@
 import "./css/SignInForm.css";
-import { useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import SignInForm from "./SignInForm";
+
+let first = true;
 
 export default function SignUpForm() {
   const [click, setClick] = useState(false);
   const [value, setValue] = useState("student");
+  const [emailValue, setEmailValue] = useState("");
+  const [nicknameValue, setNicknameValue] = useState("");
+  const [passwordValue, setPasswordValue] = useState("");
+  const [butState, changeButState] = useState(false);
+
   function clicked() {
+    first = true;
     setClick(true);
   }
+
+  const firstRender = useRef(true);
+
+  useEffect(() => {
+    if(firstRender.current) firstRender.current = false;
+    else {
+    fetch("http://localhost:3010/register", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+      },
+      body: JSON.stringify({emailValue, nicknameValue, passwordValue, role: value}), // no first
+    })
+      .then((res) => res.json())
+      .then((res) => 
+        {if(first === false) alert(res.data);
+        first = false;
+      })
+    }
+  }, [butState]);
 
   return (
     <div className="form">
       {click === false ? (
-        <form id="sign-form">
+        <form id="sign-form" onSubmit={(e) => {
+          e.preventDefault();
+        }}>
           <p id="greeting">Let's register</p>
           <div id="role">
             <input
@@ -43,16 +73,40 @@ export default function SignUpForm() {
           <label for="username" className="form-label">
             Email
           </label>
-          <input type="email" id="email" className="form-input"></input>
+          <input
+            type="email"
+            id="email"
+            className="form-input"
+            name="email"
+            onChange={(e) => setEmailValue(e.target.value)}
+          ></input>
           <label for="username" className="form-label">
             Имя пользователя
           </label>
-          <input type="text" id="username" className="form-input"></input>
+          <input
+            type="text"
+            id="username"
+            className="form-input"
+            name="username"
+            onChange={(e) => setNicknameValue(e.target.value)}
+          ></input>
           <label for="password" className="form-label">
             Пароль
           </label>
-          <input type="password" id="password" className="form-input"></input>
-          <button type="submit" className="sign-button">
+          <input
+            type="password"
+            id="password"
+            className="form-input"
+            name="password"
+            onChange={(e) => setPasswordValue(e.target.value)}
+          ></input>
+          <button
+            type="submit"
+            className="sign-button"
+            onClick={() => {
+                changeButState((prevState) => !prevState);
+            }}
+          >
             Регистрация
           </button>
 

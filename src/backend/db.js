@@ -54,6 +54,44 @@ class Database {
     }
   }
 
+  async emailExists(email) {
+    try {
+      await mongoClient.connect();
+      const db = mongoClient.db("tutor_db");
+      const user = db.collection("users");
+
+      const extractData = await user.findOne({ email });
+
+      if (extractData === null) {
+        return false;
+      }
+      return true;
+    } catch (err) {
+      console.log(err);
+    } finally {
+      await mongoClient.close();
+    }
+  }
+
+  async nicknameExists(nickname) {
+    try {
+      await mongoClient.connect();
+      const db = mongoClient.db("tutor_db");
+      const user = db.collection("users");
+
+      const extractData = await user.findOne({ nickname });
+
+      if (extractData === null) {
+        return false;
+      }
+      return true;
+    } catch (err) {
+      console.log(err);
+    } finally {
+      await mongoClient.close();
+    }
+  }
+
   async checkUser(nickname, password) {
     try {
       await mongoClient.connect();

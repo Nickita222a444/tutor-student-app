@@ -11,7 +11,7 @@ export default function SignInForm() {
   return (
     <div className="form">
       {click === false ? (
-        <form id="sign-form">
+        <form id="sign-form" method="POST" action="g">
           <label for="username" className="form-label">
             Имя пользователя
           </label>
