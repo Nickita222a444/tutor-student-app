@@ -3,20 +3,73 @@ import "./css/StudentCabinet.css";
 import Select from "react-select";
 import user_icon from "./img/user_icon.svg";
 import door_icon from "./img/door_icon.svg";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
-export default function StudentCabinet() {
+let firstTime = true;
+
+export default function StudentCabinet({ username }) {
   const [value, setValue] = useState("student");
 
   const [searchItems, setSearchItems] = useState([]);
+  const [tutorItems, setTutorItems] = useState([]);
+  const [logOutBut, setLogOutBut] = useState(false);
+  const [searchBut, setSearchBut] = useState(false);
+
+  const [minAge, setMinAge] = useState();
+  const [maxAge, setMaxAge] = useState();
+  const [specs, setSpecs] = useState();
+
+  let firstRend = useRef(true);
+
+  // useEffect(() => {
+  //   if (firstRend.current) {
+  //     firstRend.current = false;
+  //     console.log("точно true");
+  //   } else {
+  //     console.log("точно false");
+  //     fetch("http://localhost:3010/l", {
+  //       method: "POST",
+  //     })
+  //       .then((res) => res.json())
+  //       .then((res) => {
+  //         console.log(res.data);
+  //       });
+  //   }
+  // }, [logOutBut]);
 
   useEffect(() => {
-    fetch("http://localhost:3010/subjects")
-      .then((res) => res.json())
-      .then((result) => {
-        setSearchItems(result);
-      });
+    if (firstRend.current) firstRend.current = false;
+    else {
+      fetch("http://localhost:3010/findInitialData", { method: "post" })
+        .then((res) => res.json())
+        .then((res) => {
+          setTutorItems(res.cards);
+          setSearchItems(res.subjects);
+        });
+      firstRend.current = true;
+    }
   }, []);
+
+  useEffect(() => {
+    {
+      if (firstRend.current) firstRend.current = false;
+      else {
+        if (!firstTime)
+          fetch("http://localhost:3010/findTutors", {
+            method: "post",
+            headers: {
+              "Content-Type": "application/json; charset=utf-8",
+            },
+            body: JSON.stringify({ minAge: +minAge, maxAge: +maxAge, specs }),
+          })
+            .then((res) => res.json())
+            .then((res) => {
+              setTutorItems(res.data);
+            });
+        else firstTime = false;
+      }
+    }
+  }, [searchBut]);
 
   return (
     <div className="student-screen">
@@ -47,9 +100,15 @@ export default function StudentCabinet() {
           <div id="search-role-layer"></div>
         </div>
         <div id="user-panel">
-          <p id="username">Jacob</p>
+          <p id="username">{username}</p>
           <img src={user_icon} id="user-icon" />
-          <button className="button" id="exit-button">
+          <button
+            className="button"
+            id="exit-button"
+            onClick={() => {
+              setLogOutBut((prevState) => !prevState);
+            }}
+          >
             Выйти
             <img src={door_icon} />
           </button>
@@ -66,35 +125,46 @@ export default function StudentCabinet() {
           options={Array.prototype.slice.call(searchItems, 0).map((item) => {
             return { label: item.subject_name, value: item.subject_id };
           })}
+          onChange={(e) => {
+            setSpecs(e);
+          }}
         ></Select>
       </div>
 
       <div id="age-select">
         <p>Возраст</p>
         <p>от</p>
-        <input type="number"></input>
+        <input
+          type="number"
+          onChange={(e) => setMinAge(e.target.value)}
+        ></input>
         <p>до</p>
-        <input type="number"></input>
+        <input
+          type="number"
+          onChange={(e) => setMaxAge(e.target.value)}
+        ></input>
       </div>
 
-      <button type="submit" className="button search-button">
+      <button
+        type="submit"
+        className="button search-button"
+        onClick={() => {
+          setSearchBut((prevState) => !prevState);
+        }}
+      >
         Найти
       </button>
       <div id="search-result">
-        <TutorCard
-          name="Николас Фламель"
-          birth_date="01.01.1330"
-          specialization={["алхимия", "торговля"]}
-          about="создатель философского камня, плейбой, меценат. Веду курсы по алхимии и предпринимательству. Опыт преподавания 200 лет"
-        />
-        <TutorCard
-          name="Волан-де-Морт"
-          birth_date="31.12.1926"
-          specialization={["некромантия", "чёрная магия"]}
-          about={
-            "самый авторитетный чёрный волшебник всех времён и народов. Учу воскрешать единорогов"
-          }
-        />
+        {Array.prototype.slice.call(tutorItems, 0).map((item) => {
+          return (
+            <TutorCard
+              name={item.full_name}
+              birth_date={item.birth_date}
+              specialization={item.qualification}
+              about={item.about}
+            />
+          );
+        })}
       </div>
     </div>
   );

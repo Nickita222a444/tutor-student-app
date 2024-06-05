@@ -20,29 +20,37 @@ export default function SignUpForm() {
   const firstRender = useRef(true);
 
   useEffect(() => {
-    if(firstRender.current) firstRender.current = false;
+    if (firstRender.current) firstRender.current = false;
     else {
-    fetch("http://localhost:3010/register", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json; charset=utf-8",
-      },
-      body: JSON.stringify({emailValue, nicknameValue, passwordValue, role: value}), // no first
-    })
-      .then((res) => res.json())
-      .then((res) => 
-        {if(first === false) alert(res.data);
-        first = false;
+      fetch("http://localhost:3010/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json; charset=utf-8",
+        },
+        body: JSON.stringify({
+          emailValue,
+          nicknameValue,
+          passwordValue,
+          role: value,
+        }), // no first
       })
+        .then((res) => res.json())
+        .then((res) => {
+          if (first === false) alert(res.data);
+          first = false;
+        });
     }
   }, [butState]);
 
   return (
     <div className="form">
       {click === false ? (
-        <form id="sign-form" onSubmit={(e) => {
-          e.preventDefault();
-        }}>
+        <form
+          id="sign-form"
+          onSubmit={(e) => {
+            e.preventDefault();
+          }}
+        >
           <p id="greeting">Let's register</p>
           <div id="role">
             <input
@@ -104,14 +112,14 @@ export default function SignUpForm() {
             type="submit"
             className="sign-button"
             onClick={() => {
-                changeButState((prevState) => !prevState);
+              changeButState((prevState) => !prevState);
             }}
           >
             Регистрация
           </button>
 
           <div className="dotted-line"></div>
-          <p id="sign-in-offer">Нет аккаунта?</p>
+          <p id="sign-in-offer">Есть аккаунт?</p>
 
           <button className="sign-button" onClick={clicked}>
             Войти

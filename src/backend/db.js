@@ -99,6 +99,11 @@ class Database {
       const user = db.collection("users");
 
       const extractedData = await user.findOne({ nickname });
+
+      if (extractedData === null) {
+        return false;
+      }
+
       return await bcrypt.compare(password, extractedData["password"]);
     } catch (err) {
       console.log(err);
@@ -107,7 +112,7 @@ class Database {
     }
   }
 
-  async isStudent(email) {
+  async isStudent(nickname) {
     try {
       await mongoClient.connect();
       const db = mongoClient.db("tutor_db");
@@ -115,7 +120,9 @@ class Database {
 
       // Существование запрашиваемого пользвателя не проверяем, поскольку на сервере
       // данная функция будет выполняться уже после функции checkUser()
-      const checkingUser = await user.findOne({ email });
+      const checkingUser = await user.findOne({ nickname });
+      if (checkingUser === null) return null;
+
       if (checkingUser["role"] === "student") return true;
       return false;
     } catch (err) {
@@ -199,16 +206,18 @@ class Database {
       const db = mongoClient.db("tutor_db");
       const resume = db.collection("resume");
 
-      await resume.findOneAndUpdate(
+      await resume.updateOne(
         { nickname },
         {
-          full_name,
-          birth_date,
-          education,
-          about,
-          phone_number,
-          work_email,
-          qualification,
+          $set: {
+            full_name,
+            birth_date,
+            education,
+            about,
+            phone_number,
+            work_email,
+            qualification,
+          },
         }
       );
     } catch (err) {
@@ -346,12 +355,15 @@ class Database {
     }
   }
 
-  async searchTutor(specialization, minAge, maxAge) {
+  async searchTutor(specialization = null, minAge = null, maxAge = null) {
     try {
       await mongoClient.connect();
       const db = mongoClient.db("tutor_db");
       const resume = db.collection("resume");
 
+      if (specialization === null && minAge === null && maxAge === null) {
+        return await resume.find().toArray();
+      }
       return await resume
         .aggregate([
           {
@@ -360,7 +372,7 @@ class Database {
               resume_id: 1,
               nickname: 1,
               full_name: 1,
-              birth_date: 1,
+              birth_date: "$birth_date",
               education: 1,
               about: 1,
               phone_number: 1,
@@ -436,7 +448,7 @@ class Database {
   }
 
   // все студенты, которые добавили этого преподавателя в избранное
-  async studentsFavoritedTutor(resume_id) {
+  async studentsFavoritedTutor(nickname) {
     try {
       await mongoClient.connect();
       const db = mongoClient.db("tutor_db");
@@ -445,7 +457,7 @@ class Database {
       const f = await user.find({ role: "student" }).toArray();
 
       return f.reduce((students, item) => {
-        if (item["favorite"].includes(resume_id))
+        if (item["favorite"].includes(nickname))
           students.push(item["nickname"]);
         return students;
       }, []);
@@ -459,6 +471,4 @@ class Database {
 
 const db = new Database();
 Object.freeze(db);
-//db.tutorsFeedbackedByStudent("Ludvick").then((el) => console.log(el));
-// db.showSubjects().then((el) => console.log(el));
 module.exports = db;

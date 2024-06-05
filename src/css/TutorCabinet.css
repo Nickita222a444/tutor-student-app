@@ -11,7 +11,8 @@
 }
 
 #tutor-form,
-#tutor-resume {
+#tutor-resume,
+.no_resume {
   display: inline-block;
   position: relative;
   padding: 40px;
@@ -149,4 +150,26 @@ img {
 
 #right-col button:last-child {
   float: right;
+}
+
+.no_resume {
+  position: relative;
+  display: inline-block;
+  /* margin-left: 25%; */
+  /* box-sizing: border-box; */
+  font-size: 21px;
+  width: 40vw;
+  text-align: center;
+  padding-bottom: 8px;
+}
+
+#no_resume_but {
+  display: block;
+  position: relative;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.fineDiv {
+  display: inline-block;
 }
