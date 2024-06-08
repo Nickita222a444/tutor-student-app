@@ -69,19 +69,19 @@
   padding: 0.6em;
 }
 
-.favorite-button {
+#favorite-button {
   margin-bottom: 10px;
   background-color: #ffb6c1;
   color: #000;
   font-size: 16px;
 }
 
-.favorite-button * {
+#favorite-button * {
   display: inline;
   vertical-align: middle;
 }
 
-.favorite-button p {
+#favorite-button p {
   margin-left: 5px;
 }
 

@@ -23,10 +23,6 @@ app.use((req, res, next) => {
 
 app.use(express.json());
 
-app.get("/subjects", async (req, res) => {
-  res.send(await db.showSubjects());
-});
-
 app.post("/register", async (req, res) => {
   if (
     !req.body.emailValue ||
@@ -70,7 +66,6 @@ app.post("/sign-in", async (req, res) => {
   if (role) await client.set("isStudent", "student");
   else await client.set("isStudent", "tutor");
 
-  const d = await client.get("nickname");
   await client.set("isAuthorized", "yes");
 });
 
@@ -81,14 +76,6 @@ app.post("/getUsername", async (req, res) => {
   res.json({ nickname: d, isStudent: role, isAuthorized });
 });
 
-app.get("/l", async (req, res) => {
-  console.log("ok");
-  await client.set("isAuthorized", "no");
-  const d = await client.get("isAuthorized");
-  console.log(d);
-  res.json({ data: "D" });
-});
-
 app.post("/get", async (req, res) => {
   const nick = await client.get("nickname");
   const likes = await db.studentsFavoritedTutor(nick);
@@ -97,10 +84,62 @@ app.post("/get", async (req, res) => {
   let likesCount;
   if (likes === undefined) likesCount = 0;
   else likesCount = likes.length;
+
+  for (let i in await resume["qualification"])
+    resume["qualification"][i] = {
+      label: await db.getSubjectName(resume["qualification"][i]),
+      value: resume["qualification"][i],
+    };
+
   res.json({
     likesCount,
     resume,
     isResumeExists,
+    subjects: await db.showSubjects(),
+  });
+});
+
+app.post("/getFullTutorCard", async (req, res) => {
+  const nick = req.body.name;
+  const likes = await db.studentsFavoritedTutor(nick);
+  const resume = await db.showResume(nick);
+  const isResumeExists = await db.isResumeExists(nick);
+  const stud_nick = await client.get("nickname");
+  let tutors;
+  if ((await db.tutorsFavoritedByStudent(stud_nick)) !== undefined)
+    tutors = Object.values(await db.tutorsFavoritedByStudent(stud_nick));
+  else tutors = [];
+
+  let clicked = false;
+  for (let i in tutors) {
+    if (tutors[i]["nickname"] === nick) {
+      clicked = true;
+      break;
+    }
+  }
+
+  let likesCount;
+  if (likes === undefined) likesCount = 0;
+  else likesCount = likes.length;
+
+  for (let i = 0; i < resume["qualification"].length; ++i)
+    if (
+      i == resume["qualification"].length - 1 ||
+      resume["qualification"].length === 1
+    )
+      resume["qualification"][i] = await db.getSubjectName(
+        resume["qualification"][i]
+      );
+    else
+      resume["qualification"][i] = `${await db.getSubjectName(
+        resume["qualification"][i]
+      )}, `;
+
+  res.json({
+    likesCount,
+    resume,
+    isResumeExists,
+    clicked,
   });
 });
 
@@ -112,9 +151,9 @@ app.post("/saveResume", async (req, res) => {
       nick,
       req.body.name,
       new Date(
-        `${new Date(req.body.birthDate).getFullYear()}-${new Date(
-          req.body.birthDate
-        ).getMonth()}-${new Date(req.body.birthDate).getDate()}`
+        `${new Date(req.body.birthDate).getFullYear()}-${
+          new Date(req.body.birthDate).getMonth() + 1
+        }-${new Date(req.body.birthDate).getDate() + 1}`
       ),
       req.body.education,
       req.body.about,
@@ -132,9 +171,9 @@ app.post("/saveResume", async (req, res) => {
       req.body.name !== null ? req.body.name : oldResume.full_name,
       req.body.birthDate !== null
         ? new Date(
-            `${new Date(req.body.birthDate).getFullYear()}-${new Date(
-              req.body.birthDate
-            ).getMonth()}-${new Date(req.body.birthDate).getDate()}`
+            `${new Date(req.body.birthDate).getFullYear()}-${
+              new Date(req.body.birthDate).getMonth() + 1
+            }-${new Date(req.body.birthDate).getDate() + 1}`
           )
         : oldResume.birth_date,
       req.body.education !== null ? req.body.education : oldResume.education,
@@ -155,22 +194,98 @@ app.post("/saveResume", async (req, res) => {
 });
 
 app.post("/findInitialData", async (req, res) => {
-  res.json({
-    cards: await db.searchTutor(),
-    subjects: await db.showSubjects(),
-  });
+  let cards;
+  if (req.body.searchMode === "all") {
+    cards = await db.searchTutor(null, null, null, "all", null);
+  } else {
+    cards = await db.tutorsFavoritedByStudent(await client.get("nickname"));
+  }
+  let subjects = await db.showSubjects();
+
+  for (let tutor in cards) {
+    for (let i in cards[tutor]["qualification"])
+      cards[tutor]["qualification"][i] = await db.getSubjectName(
+        cards[tutor]["qualification"][i]
+      );
+  }
+  res.json({ cards, subjects });
 });
 
 app.post("/findTutors", async (req, res) => {
-  res.json({
-    data: await db.searchTutor(
+  if (req.body.minAge > req.body.maxAge || req.body.minAge < 0) {
+    res.json({ data: "Некорректный возраст" });
+    return;
+  }
+  if (req.body.specs.length === 0) {
+    res.json({ data: "Пожалуйста, заполните специализацию" });
+    return;
+  }
+
+  let data;
+  if (req.body.searchMode === "all")
+    data = await db.searchTutor(
       req.body.specs.map((item) => {
         return item.value;
       }),
       req.body.minAge,
       req.body.maxAge
-    ),
+    );
+  else
+    data = await db.searchTutor(
+      req.body.specs.map((item) => {
+        return item.value;
+      }),
+      req.body.minAge,
+      req.body.maxAge,
+      req.body.searchMode,
+      await client.get("nickname")
+    );
+  for (let tutor in data) {
+    for (let i in data[tutor]["qualification"])
+      data[tutor]["qualification"][i] = await db.getSubjectName(
+        data[tutor]["qualification"][i]
+      );
+  }
+  res.json({ data });
+});
+
+app.post("/changeFav", async (req, res) => {
+  const stud_nick = await client.get("nickname");
+  const tutor_nick = req.body.tutor_nick;
+
+  let tutors;
+  if ((await db.tutorsFavoritedByStudent(stud_nick)) !== undefined)
+    tutors = Object.values(await db.tutorsFavoritedByStudent(stud_nick));
+  else tutors = [];
+
+  let isInFav = false;
+  for (let i in tutors) {
+    if (tutors[i]["nickname"] === tutor_nick) {
+      isInFav = true;
+      break;
+    }
+  }
+
+  if (req.body.clicked)
+    if (isInFav) return;
+    else await db.addToFavorite(stud_nick, tutor_nick);
+  else await db.deleteFavorite(stud_nick, tutor_nick);
+});
+
+app.post("/sendComment", async (req, res) => {
+  const nick = await client.get("nickname");
+  if (req.body.text !== null)
+    if (!(await db.isFeedbackExists(nick, req.body.tutor)))
+      await db.addFeedback(nick, req.body.tutor, req.body.date, req.body.text);
+    else await db.updateFeedback(nick, req.body.tutor, req.body.text);
+});
+
+app.post("/log-out", async (req, res) => {
+  await client.del("nickname", (err, response) => {
+    if (err) throw err;
+    console.log(response);
   });
+  await client.set("isAuthorized", "no");
 });
 
 app.listen(PORT, async () => {

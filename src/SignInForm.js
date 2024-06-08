@@ -34,6 +34,7 @@ export default function SignInForm() {
       })
         .then((res) => res.json())
         .then((res) => {
+          // console.log(res.data);
           if (first === false) {
             alert(res.data);
           }
@@ -83,6 +84,7 @@ export default function SignInForm() {
             className="sign-button"
             onClick={() => {
               changeSignInButState((prevState) => !prevState);
+              // first = true;
             }}
           >
             Войти

@@ -243,14 +243,14 @@ class Database {
     }
   }
 
-  async addFeedback(nickname, resume_id, date, text) {
+  async addFeedback(nickname, tutor_nick, date, text) {
     try {
       await mongoClient.connect();
       const db = mongoClient.db("tutor_db");
       const resume = db.collection("resume");
 
       await resume.findOneAndUpdate(
-        { resume_id },
+        { nickname: tutor_nick },
         {
           $push: {
             feedback: {
@@ -268,14 +268,14 @@ class Database {
     }
   }
 
-  async updateFeedback(nickname, resume_id, text) {
+  async updateFeedback(nickname, tutor_nick, text) {
     try {
       await mongoClient.connect();
       const db = mongoClient.db("tutor_db");
       const resume = db.collection("resume");
 
       await resume.findOneAndUpdate(
-        { resume_id },
+        { nickname: tutor_nick },
         { $set: { "feedback.$[elem].text": text } },
         { arrayFilters: [{ "elem.author_name": nickname }] }
       );
@@ -286,7 +286,7 @@ class Database {
     }
   }
 
-  async isFeedbackExists(nickname, resume_id) {
+  async isFeedbackExists(nickname, tutor_nick) {
     try {
       await mongoClient.connect();
       const db = mongoClient.db("tutor_db");
@@ -294,7 +294,7 @@ class Database {
 
       if (
         (await resume.findOne({
-          resume_id,
+          nickname: tutor_nick,
           feedback: { $elemMatch: { author_name: nickname } },
         })) === null
       )
@@ -307,7 +307,7 @@ class Database {
     }
   }
 
-  async addToFavorite(nickname, resume_id) {
+  async addToFavorite(nickname, tutor_nickname) {
     try {
       await mongoClient.connect();
       const db = mongoClient.db("tutor_db");
@@ -315,7 +315,7 @@ class Database {
 
       await user.findOneAndUpdate(
         { nickname },
-        { $push: { favorite: resume_id } }
+        { $push: { favorite: tutor_nickname } }
       );
     } catch (err) {
       console.log(err);
@@ -324,7 +324,7 @@ class Database {
     }
   }
 
-  async deleteFavorite(nickname, resume_id) {
+  async deleteFavorite(nickname, tutor_nickname) {
     try {
       await mongoClient.connect();
       const db = mongoClient.db("tutor_db");
@@ -332,7 +332,7 @@ class Database {
 
       await user.findOneAndUpdate(
         { nickname },
-        { $pull: { favorite: resume_id } }
+        { $pull: { favorite: tutor_nickname } }
       );
     } catch (err) {
       console.log(err);
@@ -355,16 +355,57 @@ class Database {
     }
   }
 
-  async searchTutor(specialization = null, minAge = null, maxAge = null) {
+  async searchTutor(
+    specialization = null,
+    minAge = null,
+    maxAge = null,
+    searchMode = "all",
+    nickname = null
+  ) {
     try {
       await mongoClient.connect();
       const db = mongoClient.db("tutor_db");
-      const resume = db.collection("resume");
+      let col;
+      if (searchMode == "all") col = db.collection("resume");
+      else col = await this.tutorsFavoritedByStudent(nickname);
+      //const resume = db.collection("resume");
+      // return col.reduce((tutors, item) => {
+      //   if (
+      //     item["qualification"].every((elem) =>
+      //       specialization.includes(elem)
+      //     ) &&
+      //     (new Date() - item["birth_date"]) / (1000 * 60 * 60 * 24 * 365) >=
+      //       minAge &&
+      //     (new Date() - item["birth_date"]) / (1000 * 60 * 60 * 24 * 365) <=
+      //       maxAge
+      //   )
+      //     tutors.push(item);
+      //   return tutors;
+      // }, []);
 
       if (specialization === null && minAge === null && maxAge === null) {
-        return await resume.find().toArray();
+        return await col.find().toArray();
       }
-      return await resume
+      if (maxAge === null) maxAge = 99999;
+      if (searchMode === "fav") {
+        let tutors = [];
+        for (let item in col) {
+          if (
+            specialization.every((elem) =>
+              Object.values(col[item]["qualification"]).includes(elem)
+            ) &&
+            (new Date() - new Date(col[item]["birth_date"])) /
+              (1000 * 60 * 60 * 24 * 365) >=
+              minAge &&
+            (new Date() - new Date(col[item]["birth_date"])) /
+              (1000 * 60 * 60 * 24 * 365) <=
+              maxAge
+          )
+            tutors.push(col[item]);
+        }
+        return tutors;
+      }
+      return await col
         .aggregate([
           {
             $project: {
@@ -461,6 +502,47 @@ class Database {
           students.push(item["nickname"]);
         return students;
       }, []);
+    } catch (err) {
+      console.log(err);
+    } finally {
+      await mongoClient.close();
+    }
+  }
+
+  async tutorsFavoritedByStudent(student) {
+    try {
+      await mongoClient.connect();
+      const db = mongoClient.db("tutor_db");
+      const resume = db.collection("resume");
+      const users = db.collection("users");
+
+      const stud = await users.findOne({ nickname: student });
+      //console.log(`Мы: ${fav_tutors}`);
+      let tutors = [];
+      for (let i in stud["favorite"]) {
+        tutors.push(await this.showResume(stud["favorite"][i]));
+      }
+      // return stud["favorite"].reduce(async (tutors, item) => {
+      //   console.log(`${item} in ${stud["favorite"]}`);
+      //   console.log(typeof tutors);
+      //   tutors.push(await this.showResume(item));
+      //   return tutors;
+      // }, []);
+      return tutors;
+    } catch (err) {
+      console.log(err);
+    } finally {
+      await mongoClient.close();
+    }
+  }
+  async getSubjectName(subject_id) {
+    try {
+      await mongoClient.connect();
+      const db = mongoClient.db("tutor_db");
+      const subject = db.collection("subject");
+
+      const data = await subject.findOne({ subject_id });
+      return data["subject_name"];
     } catch (err) {
       console.log(err);
     } finally {
