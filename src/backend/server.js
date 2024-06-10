@@ -1,6 +1,7 @@
 const express = require("express");
 const redis = require("redis");
 const db = require("./db.js");
+// const nodemailer = require("nodemailer");
 
 const PORT = process.env.PORT || 3010;
 const app = express();
@@ -286,7 +287,10 @@ app.post("/log-out", async (req, res) => {
     console.log(response);
   });
   await client.set("isAuthorized", "no");
+  res.json({ ok: true });
 });
+
+// Email Validation
 
 app.listen(PORT, async () => {
   console.log(`Server listening on ${PORT}`);

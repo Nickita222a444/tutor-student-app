@@ -5,7 +5,7 @@ import empty_heart from "./img/favorite_icon_empty.svg";
 import pencil_icon from "./img/pencil_icon.svg";
 import Comment from "./Comment";
 import "./css/TutorCabinet.css";
-import { useEffect, useRef, useState, useReducer } from "react";
+import { useEffect, useRef, useState } from "react";
 
 function getQuantity(n) {
   const old_n = n;
@@ -23,8 +23,10 @@ function getQuantity(n) {
 }
 
 let favRenderCounter = 0;
+let favoritedClicked = false;
 
 export default function FullTutorCard({ nickname }) {
+  const [studUsername, setStudUsername] = useState();
   const [name, setName] = useState();
   const [birth_date, setBirthDate] = useState();
   const [education, setEducation] = useState();
@@ -75,8 +77,15 @@ export default function FullTutorCard({ nickname }) {
   }, []);
 
   useEffect(() => {
-    if (favRenderCounter >= 2) {
-      console.log(favorited);
+    fetch("http://localhost:3010/getUsername", { method: "POST" })
+      .then((res) => res.json())
+      .then((res) => {
+        setStudUsername(res.nickname);
+      });
+  }, []);
+
+  useEffect(() => {
+    if (favRenderCounter >= 2 && favoritedClicked) {
       fetch("http://localhost:3010/changeFav", {
         method: "post",
         headers: {
@@ -107,7 +116,7 @@ export default function FullTutorCard({ nickname }) {
   return (
     <div className="tutor-screen">
       <div id="user-panel">
-        <p id="username">Jacob</p>
+        <p id="username">{studUsername}</p>
         <img src={user_icon} id="user-icon" />
         <button className="button" id="exit-button">
           Выйти
@@ -162,7 +171,10 @@ export default function FullTutorCard({ nickname }) {
           type="submit"
           className="button"
           id="favorite-button"
-          onClick={() => setFavorited((prevState) => !prevState)}
+          onClick={() => {
+            favoritedClicked = true;
+            setFavorited((prevState) => !prevState);
+          }}
         >
           <img src={favorited ? heart : empty_heart} />
           <p>{favorited ? "Удалить из избранного" : "В избранное"} </p>

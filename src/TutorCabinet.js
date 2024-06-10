@@ -6,8 +6,6 @@ import Select from "react-select";
 import Comment from "./Comment";
 import SignInForm from "./SignInForm";
 
-let logOutCheck = false;
-
 function getQuantity(n) {
   const old_n = n;
   n %= 100;
@@ -22,6 +20,9 @@ function getQuantity(n) {
     return `${old_n} студента`;
   }
 }
+
+let tutorLogOutCheck = false;
+let saveResumeClicked = false;
 
 export default function TutorCabinet({ username }) {
   const [likesCount, setLikesCount] = useState(1);
@@ -56,30 +57,37 @@ export default function TutorCabinet({ username }) {
   }, []);
 
   useEffect(() => {
-    fetch("http://localhost:3010/saveResume", {
-      method: "post",
-      headers: {
-        "Content-Type": "application/json; charset=utf-8",
-      },
-      body: JSON.stringify({
-        name,
-        birthDate,
-        education,
-        specs,
-        about,
-        email,
-        phoneNumber,
-        isResumeExists,
-      }),
-    })
-      .then((res) => res.json())
-      .then((res) => alert(res.data));
+    if (saveResumeClicked) {
+      fetch("http://localhost:3010/saveResume", {
+        method: "post",
+        headers: {
+          "Content-Type": "application/json; charset=utf-8",
+        },
+        body: JSON.stringify({
+          name,
+          birthDate,
+          education,
+          specs,
+          about,
+          email,
+          phoneNumber,
+          isResumeExists,
+        }),
+      })
+        .then((res) => res.json())
+        .then((res) => alert(res.data));
+      saveResumeClicked = false;
+    }
   }, [saveBut]);
 
   useEffect(() => {
-    if (logOutCheck) {
-      fetch("http://localhost:3010/log-out", { method: "POST" });
+    console.log(tutorLogOutCheck);
+    if (tutorLogOutCheck) {
+      fetch("http://localhost:3010/log-out", { method: "POST" })
+        .then((res) => res.json())
+        .then((res) => console.log(res.ok));
       alert("До свидания!");
+      tutorLogOutCheck = false;
     }
   }, [logOutBut]);
 
@@ -95,7 +103,8 @@ export default function TutorCabinet({ username }) {
               id="exit-button"
               onClick={() => {
                 setLogOutBut((prevState) => !prevState);
-                logOutCheck = true;
+                tutorLogOutCheck = true;
+                console.log(tutorLogOutCheck);
               }}
             >
               Выйти
@@ -188,6 +197,7 @@ export default function TutorCabinet({ username }) {
                 className="button save-button"
                 onClick={() => {
                   setIsResumeExists(true);
+                  saveResumeClicked = true;
                   setSaveBut((prevState) => !prevState);
                 }}
               >

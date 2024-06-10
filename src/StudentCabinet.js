@@ -7,7 +7,7 @@ import door_icon from "./img/door_icon.svg";
 import { useState, useEffect, useRef } from "react";
 
 let searchRenderCounter = 0;
-let logOutCheck = false;
+let studLogOutCheck = false;
 
 export default function StudentCabinet({ username }) {
   const [searchItems, setSearchItems] = useState([]);
@@ -69,9 +69,12 @@ export default function StudentCabinet({ username }) {
   }, [searchBut]);
 
   useEffect(() => {
-    if (logOutCheck) {
-      fetch("http://localhost:3010/log-out", { method: "POST" });
+    if (studLogOutCheck) {
+      fetch("http://localhost:3010/log-out", { method: "POST" })
+        .then((res) => res.json())
+        .then((res) => console.log(res.ok));
       alert("До свидания!");
+      studLogOutCheck = false;
     }
   }, [logOutBut]);
 
@@ -109,7 +112,7 @@ export default function StudentCabinet({ username }) {
                 id="exit-button"
                 onClick={() => {
                   setLogOutBut((prevState) => !prevState);
-                  logOutCheck = true;
+                  studLogOutCheck = true;
                 }}
               >
                 Выйти

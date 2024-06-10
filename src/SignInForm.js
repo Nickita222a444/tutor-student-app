@@ -5,6 +5,7 @@ import StudentCabinet from "./StudentCabinet";
 import TutorCabinet from "./TutorCabinet";
 
 let first = true;
+let sign_in_clicked = false;
 
 export default function SignInForm() {
   const [click, setClick] = useState(false);
@@ -25,8 +26,9 @@ export default function SignInForm() {
   useEffect(() => {
     if (firstRend.current) firstRend.current = false;
     else {
+      console.log("Мы тут");
       fetch("http://localhost:3010/sign-in", {
-        method: "POST",
+        method: "post",
         headers: {
           "Content-Type": "application/json; charset=utf-8",
         },
@@ -34,16 +36,18 @@ export default function SignInForm() {
       })
         .then((res) => res.json())
         .then((res) => {
-          // console.log(res.data);
-          if (first === false) {
+          console.log(res.data);
+          if (first === false && sign_in_clicked === true) {
             alert(res.data);
           }
           first = false;
+          sign_in_clicked = false;
           if (res.data === SIGNED) {
             setIsStudent(res.role);
             setNicknameV(res.nickname);
           }
         });
+      console.log("Хай бич");
     }
   }, [signInButState]);
 
@@ -83,8 +87,8 @@ export default function SignInForm() {
             type="submit"
             className="sign-button"
             onClick={() => {
+              sign_in_clicked = true;
               changeSignInButState((prevState) => !prevState);
-              // first = true;
             }}
           >
             Войти

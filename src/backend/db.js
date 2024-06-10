@@ -2,6 +2,7 @@ const MongoClient = require("mongodb").MongoClient;
 const bcrypt = require("bcrypt");
 
 const mongoClient = new MongoClient("mongodb://admin:admin@127.0.0.1:27017");
+mongoClient.connect();
 
 class Database {
   static #instance = null;
@@ -30,8 +31,6 @@ class Database {
       await user.insertOne(temp);
     } catch (err) {
       console.log(err);
-    } finally {
-      await mongoClient.close();
     }
   }
 
@@ -49,8 +48,6 @@ class Database {
       return true;
     } catch (err) {
       console.log(err);
-    } finally {
-      await mongoClient.close();
     }
   }
 
@@ -68,8 +65,6 @@ class Database {
       return true;
     } catch (err) {
       console.log(err);
-    } finally {
-      await mongoClient.close();
     }
   }
 
@@ -87,8 +82,6 @@ class Database {
       return true;
     } catch (err) {
       console.log(err);
-    } finally {
-      await mongoClient.close();
     }
   }
 
@@ -107,8 +100,6 @@ class Database {
       return await bcrypt.compare(password, extractedData["password"]);
     } catch (err) {
       console.log(err);
-    } finally {
-      await mongoClient.close();
     }
   }
 
@@ -127,8 +118,6 @@ class Database {
       return false;
     } catch (err) {
       console.log(err);
-    } finally {
-      await mongoClient.close();
     }
   }
 
@@ -142,8 +131,6 @@ class Database {
       return true;
     } catch (err) {
       console.log(err);
-    } finally {
-      await mongoClient.close();
     }
   }
 
@@ -186,8 +173,6 @@ class Database {
       });
     } catch (err) {
       console.log(err);
-    } finally {
-      await mongoClient.close();
     }
   }
 
@@ -222,8 +207,6 @@ class Database {
       );
     } catch (err) {
       console.log(err);
-    } finally {
-      await mongoClient.close();
     }
   }
 
@@ -238,8 +221,6 @@ class Database {
       return await resume.findOne({ nickname });
     } catch (err) {
       console.log(err);
-    } finally {
-      await mongoClient.close();
     }
   }
 
@@ -263,8 +244,6 @@ class Database {
       );
     } catch (err) {
       console.log(err);
-    } finally {
-      await mongoClient.close();
     }
   }
 
@@ -281,8 +260,6 @@ class Database {
       );
     } catch (err) {
       console.log(err);
-    } finally {
-      await mongoClient.close();
     }
   }
 
@@ -302,8 +279,6 @@ class Database {
       return true;
     } catch (err) {
       console.log(err);
-    } finally {
-      await mongoClient.close();
     }
   }
 
@@ -319,8 +294,6 @@ class Database {
       );
     } catch (err) {
       console.log(err);
-    } finally {
-      await mongoClient.close();
     }
   }
 
@@ -336,8 +309,6 @@ class Database {
       );
     } catch (err) {
       console.log(err);
-    } finally {
-      await mongoClient.close();
     }
   }
 
@@ -350,8 +321,6 @@ class Database {
       return await subject.find().toArray();
     } catch (err) {
       console.log(err);
-    } finally {
-      await mongoClient.close();
     }
   }
 
@@ -368,21 +337,6 @@ class Database {
       let col;
       if (searchMode == "all") col = db.collection("resume");
       else col = await this.tutorsFavoritedByStudent(nickname);
-      //const resume = db.collection("resume");
-      // return col.reduce((tutors, item) => {
-      //   if (
-      //     item["qualification"].every((elem) =>
-      //       specialization.includes(elem)
-      //     ) &&
-      //     (new Date() - item["birth_date"]) / (1000 * 60 * 60 * 24 * 365) >=
-      //       minAge &&
-      //     (new Date() - item["birth_date"]) / (1000 * 60 * 60 * 24 * 365) <=
-      //       maxAge
-      //   )
-      //     tutors.push(item);
-      //   return tutors;
-      // }, []);
-
       if (specialization === null && minAge === null && maxAge === null) {
         return await col.find().toArray();
       }
@@ -439,8 +393,6 @@ class Database {
         .toArray();
     } catch (err) {
       console.log(err);
-    } finally {
-      await mongoClient.close();
     }
   }
 
@@ -459,8 +411,6 @@ class Database {
       }, []);
     } catch (err) {
       console.log(err);
-    } finally {
-      await mongoClient.close();
     }
   }
 
@@ -483,8 +433,6 @@ class Database {
       }, []);
     } catch (err) {
       console.log(err);
-    } finally {
-      await mongoClient.close();
     }
   }
 
@@ -504,8 +452,6 @@ class Database {
       }, []);
     } catch (err) {
       console.log(err);
-    } finally {
-      await mongoClient.close();
     }
   }
 
@@ -522,17 +468,10 @@ class Database {
       for (let i in stud["favorite"]) {
         tutors.push(await this.showResume(stud["favorite"][i]));
       }
-      // return stud["favorite"].reduce(async (tutors, item) => {
-      //   console.log(`${item} in ${stud["favorite"]}`);
-      //   console.log(typeof tutors);
-      //   tutors.push(await this.showResume(item));
-      //   return tutors;
-      // }, []);
+
       return tutors;
     } catch (err) {
       console.log(err);
-    } finally {
-      await mongoClient.close();
     }
   }
   async getSubjectName(subject_id) {
@@ -545,8 +484,6 @@ class Database {
       return data["subject_name"];
     } catch (err) {
       console.log(err);
-    } finally {
-      await mongoClient.close();
     }
   }
 }
