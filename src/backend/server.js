@@ -1,10 +1,19 @@
 const express = require("express");
 const redis = require("redis");
 const db = require("./db.js");
-// const nodemailer = require("nodemailer");
+const nodemailer = require("nodemailer");
 
 const PORT = process.env.PORT || 3010;
 const app = express();
+
+// Email Validation
+let smtpTransport = nodemailer.createTransport({
+  service: "gmail",
+  auth: {
+    user: "nickita.malushev@gmail.com",
+    pass: "becb avjs jbfh cnvw",
+  },
+});
 
 let client;
 app.use((req, res, next) => {
@@ -41,18 +50,52 @@ app.post("/register", async (req, res) => {
     res.json({ data: "Пользователь с такой почтой уже существует!" });
     return;
   }
+
+  // Send email validation mail
+  const rand = Math.floor(Math.random() * 100 + 54);
+  const link = `http://localhost:3010/verify?nick=${req.body.nicknameValue}&id=${rand}`;
+  const mailOptions = {
+    to: req.body.emailValue,
+    subject: "Please confirm your Email account",
+    html: `Hello,<br> Please Click on the link to verify your email.<br><a href="${link}">Click here to verify</a>`,
+  };
+  await smtpTransport.sendMail(mailOptions, function (error, response) {
+    if (error) {
+      console.log(error);
+      res.end("error");
+    } else {
+      console.log("Message sent: " + response.message);
+      res.end("sent");
+    }
+  });
+
   await db.addUser(
     req.body.nicknameValue,
     req.body.emailValue,
     req.body.passwordValue,
-    req.body.role
+    req.body.role,
+    rand
   );
-  res.json({ data: "Регистрация прошла успешно!" });
+  res.json({
+    data: "Регистрация прошла успешно!\nНа ваш почтовый адрес отправлено письмо для подтверждения",
+  });
+});
+
+app.get("/verify", async (res, req) => {
+  if (await db.compareToken(res.query.nick, res.query.id)) {
+    await db.setConfirmed(res.query.nick);
+    req.send("Ваш аккаунт успешно подтверждён!");
+    return;
+  } else req.send("Усп, ошибочка вышла");
 });
 
 app.post("/sign-in", async (req, res) => {
   if (!(await db.checkUser(req.body.nicknameV, req.body.passwordV))) {
     res.json({ data: "Неверный логин или пароль!" });
+    return;
+  }
+  if (!(await db.isConfirmed(req.body.nicknameV))) {
+    res.json({ data: "Извините, ваш аккаунт ещё не подтверждён" });
     return;
   }
   res.json({
@@ -74,7 +117,11 @@ app.post("/getUsername", async (req, res) => {
   const d = await client.get("nickname");
   const role = await client.get("isStudent");
   const isAuthorized = await client.get("isAuthorized");
-  res.json({ nickname: d, isStudent: role, isAuthorized });
+  res.json({
+    nickname: d,
+    isStudent: role,
+    isAuthorized,
+  });
 });
 
 app.post("/get", async (req, res) => {
@@ -146,16 +193,13 @@ app.post("/getFullTutorCard", async (req, res) => {
 
 app.post("/saveResume", async (req, res) => {
   const nick = await client.get("nickname");
+  console.log(req.body);
   if (!req.body.isResumeExists) return;
   if (!(await db.isResumeExists(nick))) {
     await db.fillResume(
       nick,
       req.body.name,
-      new Date(
-        `${new Date(req.body.birthDate).getFullYear()}-${
-          new Date(req.body.birthDate).getMonth() + 1
-        }-${new Date(req.body.birthDate).getDate() + 1}`
-      ),
+      req.body.birthDate,
       req.body.education,
       req.body.about,
       req.body.phoneNumber,
@@ -289,8 +333,6 @@ app.post("/log-out", async (req, res) => {
   await client.set("isAuthorized", "no");
   res.json({ ok: true });
 });
-
-// Email Validation
 
 app.listen(PORT, async () => {
   console.log(`Server listening on ${PORT}`);

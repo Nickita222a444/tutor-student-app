@@ -22,7 +22,6 @@ function getQuantity(n) {
 }
 
 let tutorLogOutCheck = false;
-let saveResumeClicked = false;
 
 export default function TutorCabinet({ username }) {
   const [likesCount, setLikesCount] = useState(1);
@@ -57,27 +56,24 @@ export default function TutorCabinet({ username }) {
   }, []);
 
   useEffect(() => {
-    if (saveResumeClicked) {
-      fetch("http://localhost:3010/saveResume", {
-        method: "post",
-        headers: {
-          "Content-Type": "application/json; charset=utf-8",
-        },
-        body: JSON.stringify({
-          name,
-          birthDate,
-          education,
-          specs,
-          about,
-          email,
-          phoneNumber,
-          isResumeExists,
-        }),
-      })
-        .then((res) => res.json())
-        .then((res) => alert(res.data));
-      saveResumeClicked = false;
-    }
+    fetch("http://localhost:3010/saveResume", {
+      method: "post",
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+      },
+      body: JSON.stringify({
+        name,
+        birthDate,
+        education,
+        specs,
+        about,
+        email,
+        phoneNumber,
+        isResumeExists,
+      }),
+    })
+      .then((res) => res.json())
+      .then((res) => alert(res.data));
   }, [saveBut]);
 
   useEffect(() => {
@@ -104,7 +100,6 @@ export default function TutorCabinet({ username }) {
               onClick={() => {
                 setLogOutBut((prevState) => !prevState);
                 tutorLogOutCheck = true;
-                console.log(tutorLogOutCheck);
               }}
             >
               Выйти
@@ -137,7 +132,11 @@ export default function TutorCabinet({ username }) {
                 id="birth-date"
                 className="form-input"
                 onChange={(e) => setBirthDate(e.target.value)}
-                defaultValue={resume.birth_date.substr(0, 10)}
+                defaultValue={
+                  resume.birth_date !== undefined
+                    ? resume.birth_date.substr(0, 10)
+                    : null
+                }
               ></input>
               <label htmlFor="education" className="form-label">
                 Образование
@@ -197,7 +196,6 @@ export default function TutorCabinet({ username }) {
                 className="button save-button"
                 onClick={() => {
                   setIsResumeExists(true);
-                  saveResumeClicked = true;
                   setSaveBut((prevState) => !prevState);
                 }}
               >
@@ -227,7 +225,10 @@ export default function TutorCabinet({ username }) {
                 type="date"
                 id="birth-date"
                 className="form-input"
-                onChange={(e) => setBirthDate(e.target.value)}
+                onChange={(e) => {
+                  setBirthDate(e.target.value);
+                  console.log(birthDate);
+                }}
               ></input>
               <label htmlFor="education" className="form-label">
                 Образование
@@ -281,8 +282,8 @@ export default function TutorCabinet({ username }) {
                 type="submit"
                 className="button save-button"
                 onClick={() => {
-                  setIsResumeExists(true);
                   setSaveBut((prevState) => !prevState);
+                  setIsResumeExists(true);
                 }}
               >
                 Сохранить

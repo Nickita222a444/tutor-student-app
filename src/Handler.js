@@ -7,6 +7,8 @@ export default function Handler() {
   const [username, setUsername] = useState("");
   const [isStudent, setIsStudent] = useState("");
   const [isAuthorized, setIsAuthorized] = useState("no");
+  const [isResumeExists, setIsResumeExists] = useState(null);
+
   useEffect(() => {
     fetch("http://localhost:3010/getUsername", { method: "POST" })
       .then((res) => res.json())
@@ -15,6 +17,7 @@ export default function Handler() {
         setIsStudent(res.isStudent);
         console.log(username);
         setIsAuthorized(res.isAuthorized);
+        setIsResumeExists(res.isResumeExists);
       });
   }, []);
   return (

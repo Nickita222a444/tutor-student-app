@@ -13,7 +13,7 @@ class Database {
     } else return Database.#instance;
   }
 
-  async addUser(nickname, email, password, role) {
+  async addUser(nickname, email, password, role, token) {
     try {
       await mongoClient.connect();
       const db = mongoClient.db("tutor_db");
@@ -24,12 +24,27 @@ class Database {
         email,
         password: await bcrypt.hash(password, 10),
         role,
+        status: false,
+        token,
       };
 
       if (role === "student") temp["favorite"] = [];
 
       await user.insertOne(temp);
     } catch (err) {
+      console.log(err);
+    }
+  }
+
+  async isConfirmed(nickname) {
+    try {
+      const db = mongoClient.db("tutor_db");
+      const user = db.collection("users");
+
+      const data = await user.findOne({ nickname });
+
+      return data["status"];
+    } catch {
       console.log(err);
     }
   }
@@ -482,6 +497,30 @@ class Database {
 
       const data = await subject.findOne({ subject_id });
       return data["subject_name"];
+    } catch (err) {
+      console.log(err);
+    }
+  }
+  async compareToken(nickname, token) {
+    try {
+      const db = mongoClient.db("tutor_db");
+      const user = db.collection("users");
+
+      const data = await user.findOne({ nickname });
+
+      if (data["token"] == token) return true;
+      return false;
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
+  async setConfirmed(nickname) {
+    try {
+      const db = mongoClient.db("tutor_db");
+      const user = db.collection("users");
+
+      await user.updateOne({ nickname }, { $set: { status: true } });
     } catch (err) {
       console.log(err);
     }

@@ -13,6 +13,7 @@ export default function SignInForm() {
   const [passwordV, setPasswordV] = useState("");
   const [signInButState, changeSignInButState] = useState(false);
   const [isStudent, setIsStudent] = useState(null);
+  const [isResumeExists, setIsResumeExists] = useState(null);
 
   const SIGNED = "Добро пожаловать!";
 
@@ -36,7 +37,6 @@ export default function SignInForm() {
       })
         .then((res) => res.json())
         .then((res) => {
-          console.log(res.data);
           if (first === false && sign_in_clicked === true) {
             alert(res.data);
           }
@@ -45,9 +45,9 @@ export default function SignInForm() {
           if (res.data === SIGNED) {
             setIsStudent(res.role);
             setNicknameV(res.nickname);
+            setIsResumeExists(res.isResumeExists);
           }
         });
-      console.log("Хай бич");
     }
   }, [signInButState]);
 
@@ -56,7 +56,7 @@ export default function SignInForm() {
       {isStudent !== null && isStudent == true ? (
         <StudentCabinet username={nicknameV} />
       ) : isStudent !== null && isStudent == false ? (
-        <TutorCabinet username={nicknameV} />
+        <TutorCabinet username={nicknameV} isResumeE={isResumeExists} />
       ) : click == false ? (
         <form
           id="sign-form"

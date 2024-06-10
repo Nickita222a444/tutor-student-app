@@ -8,6 +8,7 @@ import { useState, useEffect, useRef } from "react";
 
 let searchRenderCounter = 0;
 let studLogOutCheck = false;
+let searchClicked = false;
 
 export default function StudentCabinet({ username }) {
   const [searchItems, setSearchItems] = useState([]);
@@ -43,27 +44,31 @@ export default function StudentCabinet({ username }) {
   useEffect(() => {
     {
       if (searchRenderCounter >= 2) {
-        fetch("http://localhost:3010/findTutors", {
-          method: "post",
-          headers: {
-            "Content-Type": "application/json; charset=utf-8",
-          },
-          body: JSON.stringify({
-            minAge: +minAge,
-            maxAge: +maxAge,
-            specs,
-            searchMode,
-          }),
-        })
-          .then((res) => res.json())
-          .then((res) => {
-            if (
-              res.data === "Пожалуйста, заполните специализацию" ||
-              res.data === "Некорректный возраст"
-            )
-              alert(res.data);
-            else setTutorItems(res.data);
-          });
+        if (searchClicked)
+          fetch("http://localhost:3010/findTutors", {
+            method: "post",
+            headers: {
+              "Content-Type": "application/json; charset=utf-8",
+            },
+            body: JSON.stringify({
+              minAge: +minAge,
+              maxAge: +maxAge,
+              specs,
+              searchMode,
+            }),
+          })
+            .then((res) => res.json())
+            .then((res) => {
+              if (
+                res.data === "Пожалуйста, заполните специализацию" ||
+                res.data === "Некорректный возраст"
+              )
+                alert(res.data);
+              else {
+                setTutorItems(res.data);
+                searchClicked = false;
+              }
+            });
       } else ++searchRenderCounter;
     }
   }, [searchBut]);
@@ -157,6 +162,7 @@ export default function StudentCabinet({ username }) {
             type="submit"
             className="button search-button"
             onClick={() => {
+              searchClicked = true;
               setSearchBut((prevState) => !prevState);
             }}
           >
