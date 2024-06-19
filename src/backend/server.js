@@ -199,7 +199,11 @@ app.post("/saveResume", async (req, res) => {
     await db.fillResume(
       nick,
       req.body.name,
-      req.body.birthDate,
+      new Date(
+        `${new Date(req.body.birthDate).getFullYear()}-${
+          new Date(req.body.birthDate).getMonth() + 1
+        }-${new Date(req.body.birthDate).getDate() + 1}`
+      ),
       req.body.education,
       req.body.about,
       req.body.phoneNumber,

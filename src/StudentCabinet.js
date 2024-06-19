@@ -20,6 +20,7 @@ export default function StudentCabinet({ username }) {
   const [minAge, setMinAge] = useState();
   const [maxAge, setMaxAge] = useState();
   const [specs, setSpecs] = useState([]);
+  const [refresh, setRefresh] = useState();
 
   let firstRend = useRef(true);
 
@@ -177,6 +178,10 @@ export default function StudentCabinet({ username }) {
                   birth_date={item.birth_date}
                   specialization={item.qualification}
                   about={item.about}
+                  func={() => {
+                    setLogOutBut((prevState) => !prevState);
+                    studLogOutCheck = true;
+                  }}
                 />
               );
             })}

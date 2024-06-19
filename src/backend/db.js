@@ -355,6 +355,7 @@ class Database {
       if (specialization === null && minAge === null && maxAge === null) {
         return await col.find().toArray();
       }
+      if (minAge === null) minAge = 0;
       if (maxAge === null) maxAge = 99999;
       if (searchMode === "fav") {
         let tutors = [];

@@ -9,6 +9,7 @@ export default function TutorCard({
   birth_date,
   specialization,
   about,
+  func,
 }) {
   const [clicked, setClicked] = useState(false);
   return clicked == false ? (
@@ -40,6 +41,6 @@ export default function TutorCard({
       </div>
     </div>
   ) : (
-    <FullTutorCard nickname={nick} />
+    <FullTutorCard nickname={nick} func={func} />
   );
 }

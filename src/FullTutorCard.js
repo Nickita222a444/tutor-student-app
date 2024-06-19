@@ -6,6 +6,9 @@ import pencil_icon from "./img/pencil_icon.svg";
 import Comment from "./Comment";
 import "./css/TutorCabinet.css";
 import { useEffect, useRef, useState } from "react";
+import Handler from "./Handler";
+
+let logOutCheck = false;
 
 function getQuantity(n) {
   const old_n = n;
@@ -25,7 +28,7 @@ function getQuantity(n) {
 let favRenderCounter = 0;
 let favoritedClicked = false;
 
-export default function FullTutorCard({ nickname }) {
+export default function FullTutorCard({ nickname, func }) {
   const [studUsername, setStudUsername] = useState();
   const [name, setName] = useState();
   const [birth_date, setBirthDate] = useState();
@@ -118,7 +121,7 @@ export default function FullTutorCard({ nickname }) {
       <div id="user-panel">
         <p id="username">{studUsername}</p>
         <img src={user_icon} id="user-icon" />
-        <button className="button" id="exit-button">
+        <button className="button" id="exit-button" onClick={() => func()}>
           Выйти
           <img src={door} />
         </button>

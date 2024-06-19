@@ -15,7 +15,6 @@ export default function Handler() {
       .then((res) => {
         setUsername(res.nickname);
         setIsStudent(res.isStudent);
-        console.log(username);
         setIsAuthorized(res.isAuthorized);
         setIsResumeExists(res.isResumeExists);
       });
